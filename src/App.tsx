@@ -11,6 +11,42 @@ const HORIZONS = { YEAR: "year", MONTH: "month", OPER: "oper" } as const;
 
 type ChecklistState = "OK" | "RISK" | "NOGO";
 
+type SlotType = 'hot' | 'cold';
+type WindowStatus = 'green' | 'yellow' | 'red' | 'planned' | 'moved' | 'done' | 'cancelled';
+
+interface HistoryEntry {
+  ts: string;
+  actor: string;
+  action: 'plan' | 'go' | 'no-go' | 'move' | 'reserve' | 'complete' | 'cancel';
+  note?: string;
+}
+
+interface ReserveSlot {
+  id: string;
+  cluster: string;
+  section: string;
+  start: string;  // 'ср 12:00'
+  end: string;    // 'ср 14:00'
+  type: SlotType; // 'hot' | 'cold'
+}
+
+interface WindowItem {
+  id: string;
+  cluster: string;
+  section: string;
+  // плановое окно
+  startPlan: string; // 'вт 10:00'
+  endPlan: string;   // 'вт 14:00'
+  // факт (может быть пустым)
+  startFact?: string;
+  endFact?: string;
+  status: WindowStatus;
+  riskScore?: number;      // 0.68
+  bufferMinutes?: number;  // 30
+  type: SlotType;
+  history: HistoryEntry[];
+}
+
 interface WindowPlan {
   id: string;
   section: string; // участок
